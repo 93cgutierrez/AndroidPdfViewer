@@ -10,8 +10,22 @@ repo, where can be developed independently. Version 1.x uses different engine fo
 so if you don't like 2.x version, try 1.x.__
 
 Library for displaying PDF documents on Android, with `animations`, `gestures`, `zoom` and `double tap` support.
-It is based on [PdfiumAndroid](https://github.com/barteksc/PdfiumAndroid) for decoding PDF files. Works on API 11 (Android 3.0) and higher.
+It is based on [PdfiumAndroid](https://github.com/barteksc/PdfiumAndroid) for decoding PDF files. Works on API 19 (Android 4.0) and higher.
 Licensed under Apache License 2.0.
+
+## 3.3.0-beta.1 [fork](https://github.com/barteksc/AndroidPdfViewer)
+* pinch gesture zoom (callback onPinchZoom).
+* double tap zoom (callback onDoubleTap).
+* scroll Animation (callback OnScrollAnimation).
+  note: Called when the user has a scroll gesture, before processing scroll handle toggling
+  (options:
+  ScrollMoveDirection.NONE,
+  ScrollMoveDirection.HORIZONTAL,
+  ScrollMoveDirection.VERTICAL
+  )
+* new callback add oldZoom and newZoom, this is functionality in active scroll pinch gesture
+* center pdf change zoom
+* add method getPageSpacing, return Get spacing between pages.
 
 ## 3.2.0-beta.3
 * Change minimum SDK version to 19
