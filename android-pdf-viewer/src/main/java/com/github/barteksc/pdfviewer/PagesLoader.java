@@ -30,6 +30,7 @@ import static com.github.barteksc.pdfviewer.util.Constants.PRELOAD_OFFSET;
 
 class PagesLoader {
 
+    private static final String TAG = PagesLoader.class.getSimpleName();
     private PDFView pdfView;
     private int cacheOrder;
     private float xOffset;
@@ -311,7 +312,7 @@ class PagesLoader {
         cacheOrder = 1;
         xOffset = -MathUtils.max(pdfView.getCurrentXOffset(), 0);
         yOffset = -MathUtils.max(pdfView.getCurrentYOffset(), 0);
-
+        //Log.d(TAG, "loadPages: xOffset: " + xOffset + " yOffset: " + yOffset);
         loadVisible();
     }
 }

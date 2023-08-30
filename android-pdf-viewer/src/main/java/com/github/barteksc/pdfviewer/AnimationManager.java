@@ -24,6 +24,11 @@ import android.graphics.PointF;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.OverScroller;
 
+import androidx.annotation.IntDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 
 /**
  * This manager is used by the PDFView to launch animations.
@@ -32,6 +37,19 @@ import android.widget.OverScroller;
  * of each animation update.
  */
 class AnimationManager {
+    private static final String TAG = AnimationManager.class.getSimpleName();
+
+    @IntDef({
+            ScrollMoveDirection.NONE,
+            ScrollMoveDirection.HORIZONTAL,
+            ScrollMoveDirection.VERTICAL
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ScrollMoveDirection {
+        int NONE = 0;
+        int HORIZONTAL = 1;
+        int VERTICAL = 2;
+    }
 
     private PDFView pdfView;
 
@@ -42,6 +60,10 @@ class AnimationManager {
     private boolean flinging = false;
 
     private boolean pageFlinging = false;
+    private float oldZoom;
+    private float newZoom;
+    @ScrollMoveDirection
+    private int scrollDirection = ScrollMoveDirection.NONE;
 
     public AnimationManager(PDFView pdfView) {
         this.pdfView = pdfView;
@@ -77,6 +99,28 @@ class AnimationManager {
         ZoomAnimation zoomAnim = new ZoomAnimation(centerX, centerY);
         animation.addUpdateListener(zoomAnim);
         animation.addListener(zoomAnim);
+        animation.setDuration(400);
+        animation.start();
+    }
+
+    public void startXAnimationByDragPinchManager(float xFrom, float xTo) {
+        stopAll();
+        animation = ValueAnimator.ofFloat(xFrom, xTo);
+        XAnimationDragPinchManager xAnimationDragPinchManager = new XAnimationDragPinchManager();
+        animation.setInterpolator(new DecelerateInterpolator());
+        animation.addUpdateListener(xAnimationDragPinchManager);
+        animation.addListener(xAnimationDragPinchManager);
+        animation.setDuration(400);
+        animation.start();
+    }
+
+    public void startYAnimationByDragPinchManager(float yFrom, float yTo) {
+        stopAll();
+        animation = ValueAnimator.ofFloat(yFrom, yTo);
+        YAnimationDragPinchManager yAnimationDragPinchManager = new YAnimationDragPinchManager();
+        animation.setInterpolator(new DecelerateInterpolator());
+        animation.addUpdateListener(yAnimationDragPinchManager);
+        animation.addListener(yAnimationDragPinchManager);
         animation.setDuration(400);
         animation.start();
     }
@@ -146,6 +190,7 @@ class AnimationManager {
             pdfView.loadPages();
             pageFlinging = false;
             hideHandle();
+            callbackFinishedAnimationScroll(ScrollMoveDirection.HORIZONTAL);
         }
     }
 
@@ -166,11 +211,22 @@ class AnimationManager {
         }
 
         @Override
+        public void onAnimationStart(Animator animation) {
+        }
+
+        @Override
         public void onAnimationEnd(Animator animation) {
             pdfView.loadPages();
             pageFlinging = false;
             hideHandle();
+            callbackFinishedAnimationScroll(ScrollMoveDirection.VERTICAL);
         }
+    }
+
+    private void callbackFinishedAnimationScroll(int scrollMoveDirection) {
+        scrollDirection = scrollMoveDirection;
+        boolean onAnimationFinished =  pdfView.callbacks.callOnScrollAnimation(animation, scrollDirection);
+        scrollDirection = ScrollMoveDirection.NONE;
     }
 
     class ZoomAnimation implements AnimatorUpdateListener, AnimatorListener {
@@ -187,6 +243,7 @@ class AnimationManager {
         public void onAnimationUpdate(ValueAnimator animation) {
             float zoom = (Float) animation.getAnimatedValue();
             pdfView.zoomCenteredTo(zoom, new PointF(centerX, centerY));
+            newZoom = zoom;
         }
 
         @Override
@@ -196,20 +253,89 @@ class AnimationManager {
         }
 
         @Override
+        public void onAnimationStart(Animator animation) {
+            oldZoom = pdfView.getZoom();
+            newZoom = oldZoom;
+        }
+
+        @Override
         public void onAnimationEnd(Animator animation) {
             pdfView.loadPages();
             pdfView.performPageSnap();
             hideHandle();
+            newZoom = pdfView.getZoom();
+            boolean onDoubleTapHandled = pdfView.callbacks.callOnDoubleTap(animation, oldZoom, newZoom);
         }
 
         @Override
         public void onAnimationRepeat(Animator animation) {
         }
 
+    }
+
+    class XAnimationDragPinchManager extends AnimatorListenerAdapter implements AnimatorUpdateListener {
+
         @Override
-        public void onAnimationStart(Animator animation) {
+        public void onAnimationUpdate(ValueAnimator animation) {
+            float offset = (Float) animation.getAnimatedValue();
+            pdfView.moveTo(offset, pdfView.getCurrentYOffset());
+            pdfView.loadPageByOffset();
+            newZoom = pdfView.getZoom();
         }
 
+        @Override
+        public void onAnimationCancel(Animator animation) {
+            pdfView.loadPages();
+            pageFlinging = false;
+            hideHandle();
+        }
+
+        @Override
+        public void onAnimationStart(Animator animation) {
+            oldZoom = pdfView.getZoom();
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            pdfView.loadPages();
+            pageFlinging = false;
+            hideHandle();
+            newZoom = pdfView.getZoom();
+
+            boolean onPinchZoomHandled = pdfView.callbacks.callOnPinchZoom(animation, oldZoom, newZoom);
+        }
+    }
+
+    class YAnimationDragPinchManager extends AnimatorListenerAdapter implements AnimatorUpdateListener {
+
+        @Override
+        public void onAnimationUpdate(ValueAnimator animation) {
+            float offset = (Float) animation.getAnimatedValue();
+            pdfView.moveTo(pdfView.getCurrentXOffset(), offset);
+            pdfView.loadPageByOffset();
+            newZoom = pdfView.getZoom();
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animation) {
+            pdfView.loadPages();
+            pageFlinging = false;
+            hideHandle();
+        }
+
+        @Override
+        public void onAnimationStart(Animator animation) {
+            oldZoom = pdfView.getZoom();
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            pdfView.loadPages();
+            pageFlinging = false;
+            hideHandle();
+            newZoom = pdfView.getZoom();
+            boolean onPinchZoomHandled = pdfView.callbacks.callOnPinchZoom(animation, oldZoom, newZoom);
+        }
     }
 
     private void hideHandle() {

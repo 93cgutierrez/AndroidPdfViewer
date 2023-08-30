@@ -18,7 +18,6 @@ package com.github.barteksc.pdfviewer.link;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
 
 import com.github.barteksc.pdfviewer.PDFView;
 import com.github.barteksc.pdfviewer.model.LinkTapEvent;
@@ -51,7 +50,7 @@ public class DefaultLinkHandler implements LinkHandler {
         if (intent.resolveActivity(context.getPackageManager()) != null) {
             context.startActivity(intent);
         } else {
-            Log.w(TAG, "No activity found for URI: " + uri);
+            //Log.w(TAG, "No activity found for URI: " + uri);
         }
     }
 
