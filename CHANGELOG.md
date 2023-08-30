@@ -1,3 +1,17 @@
+## 3.3.0-beta.1 (2023-08-30) [fork](https://github.com/barteksc/AndroidPdfViewer)
+* pinch gesture zoom (callback onPinchZoom).
+* double tap zoom (callback onDoubleTap).
+* scroll Animation (callback OnScrollAnimation).
+  note: Called when the user has a scroll gesture, before processing scroll handle toggling
+  (options:
+  ScrollMoveDirection.NONE,
+  ScrollMoveDirection.HORIZONTAL,
+  ScrollMoveDirection.VERTICAL
+  )
+* new callback add oldZoom and newZoom, this is functionality in active scroll pinch gesture
+* center pdf change zoom
+* add method getPageSpacing, return Get spacing between pages.
+
 ## 3.2.0-beta.3 (2022-05-22)
 * Change minimum SDK version to 19
 * Drop MIPS support

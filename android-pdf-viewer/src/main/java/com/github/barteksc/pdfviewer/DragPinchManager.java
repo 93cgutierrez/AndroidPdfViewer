@@ -37,6 +37,7 @@ import static com.github.barteksc.pdfviewer.util.Constants.Pinch.MINIMUM_ZOOM;
  */
 class DragPinchManager implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener, ScaleGestureDetector.OnScaleGestureListener, View.OnTouchListener {
 
+    private static final String TAG = DragPinchManager.class.getSimpleName();
     private PDFView pdfView;
     private AnimationManager animationManager;
 
@@ -46,6 +47,8 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
     private boolean scrolling = false;
     private boolean scaling = false;
     private boolean enabled = false;
+    private float oldZoom;
+    private float newZoom;
 
     DragPinchManager(PDFView pdfView, AnimationManager animationManager) {
         this.pdfView = pdfView;
@@ -63,7 +66,7 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
         enabled = false;
     }
 
-    void disableLongpress(){
+    void disableLongpress() {
         gestureDetector.setIsLongpressEnabled(false);
     }
 
@@ -142,14 +145,19 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
         if (!pdfView.isDoubletapEnabled()) {
             return false;
         }
-
+        float oldZoom = pdfView.getZoom();
+        float newZoom = oldZoom;
         if (pdfView.getZoom() < pdfView.getMidZoom()) {
+            newZoom = pdfView.getMidZoom();
             pdfView.zoomWithAnimation(e.getX(), e.getY(), pdfView.getMidZoom());
         } else if (pdfView.getZoom() < pdfView.getMaxZoom()) {
+            newZoom = pdfView.getMaxZoom();
             pdfView.zoomWithAnimation(e.getX(), e.getY(), pdfView.getMaxZoom());
         } else {
+            newZoom = pdfView.DEFAULT_MIN_SCALE;
             pdfView.resetZoomWithAnimation();
         }
+        //boolean onDoubleTapHandled = pdfView.callbacks.callOnDoubleTap(e, oldZoom, newZoom);
         return true;
     }
 
@@ -189,6 +197,7 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
     private void onScrollEnd(MotionEvent event) {
         pdfView.loadPages();
         hideHandle();
+
         if (!animationManager.isFlinging()) {
             pdfView.performPageSnap();
         }
@@ -267,12 +276,25 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
         } else if (wantedZoom > maxZoom) {
             dr = maxZoom / pdfView.getZoom();
         }
-        pdfView.zoomCenteredRelativeTo(dr, new PointF(detector.getFocusX(), detector.getFocusY()));
+        float scaleFactor = dr;
+        //PDFView.DEFAULT_MAX_SCALE;
+  /*      if (dr >= PDFView.DEFAULT_MIN_SCALE && dr < PDFView.DEFAULT_MID_SCALE) {
+            scaleFactor = PDFView.DEFAULT_MIN_SCALE;
+        } else if (dr >= PDFView.DEFAULT_MID_SCALE && dr < PDFView.DEFAULT_MAX_SCALE) {
+            scaleFactor = PDFView.DEFAULT_MID_SCALE;
+        }
+        else if (dr >= PDFView.DEFAULT_MAX_SCALE) {
+            scaleFactor = PDFView.DEFAULT_MAX_SCALE;
+        }*/
+
+        //Log.d(TAG, "onScale: " + dr + " - " + wantedZoom + " - " + scaleFactor + " - " + minZoom + " - " + maxZoom);
+        pdfView.zoomCenteredRelativeTo(scaleFactor, new PointF(detector.getFocusX(), detector.getFocusY()));
         return true;
     }
 
     @Override
     public boolean onScaleBegin(ScaleGestureDetector detector) {
+        this.oldZoom = pdfView.getZoom();
         scaling = true;
         return true;
     }
@@ -280,8 +302,15 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
     @Override
     public void onScaleEnd(ScaleGestureDetector detector) {
         pdfView.loadPages();
+        //Log.d(TAG, "onScaleEnd: before " + pdfView.getZoom());
+        if (!animationManager.isFlinging()) {
+            pdfView.performPageSnapByDragPinchManager();
+        }
+        //Log.d(TAG, "onScaleEnd: after " + pdfView.getZoom());
         hideHandle();
         scaling = false;
+        this.newZoom = pdfView.getZoom();
+        //boolean onPinchZoomHandled = pdfView.callbacks.callOnPinchZoom(detector, oldZoom, newZoom);
     }
 
     @Override

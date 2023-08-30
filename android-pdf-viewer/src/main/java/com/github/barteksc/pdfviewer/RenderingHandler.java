@@ -16,14 +16,12 @@
 package com.github.barteksc.pdfviewer;
 
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 
 import com.github.barteksc.pdfviewer.exception.PageRenderingException;
 import com.github.barteksc.pdfviewer.model.PagePart;
@@ -101,7 +99,7 @@ class RenderingHandler extends Handler {
         try {
             render = Bitmap.createBitmap(w, h, renderingTask.bestQuality ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565);
         } catch (IllegalArgumentException e) {
-            Log.e(TAG, "Cannot create bitmap", e);
+            //Log.e(TAG, "Cannot create bitmap", e);
             return null;
         }
         calculateBounds(w, h, renderingTask.bounds);

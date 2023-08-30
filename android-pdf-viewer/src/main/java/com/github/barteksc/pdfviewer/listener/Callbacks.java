@@ -15,6 +15,7 @@
  */
 package com.github.barteksc.pdfviewer.listener;
 
+import android.animation.Animator;
 import android.view.MotionEvent;
 
 import com.github.barteksc.pdfviewer.link.LinkHandler;
@@ -63,6 +64,22 @@ public class Callbacks {
      * Call back object to call when the user does a tap gesture
      */
     private OnTapListener onTapListener;
+
+    /**
+     * Call back object to call when the user does a double tap gesture
+     */
+    private OnDoubleTapListener onDoubleTapListener;
+
+    /**
+     * Call back object to call when the user does a pinch zoom gesture
+     */
+    private OnPinchZoomListener onPinchZoomListener;
+
+    /**
+     * Call back object to call when the user does a scroll gesture
+     * @param onScrollAnimation
+     */
+    private OnScrollAnimation onScrollAnimation;
 
     /**
      * Call back object to call when the user does a long tap gesture
@@ -156,6 +173,30 @@ public class Callbacks {
 
     public boolean callOnTap(MotionEvent event) {
         return onTapListener != null && onTapListener.onTap(event);
+    }
+
+    public void setOnDoubleTap(OnDoubleTapListener onDoubleTapListener) {
+        this.onDoubleTapListener = onDoubleTapListener;
+    }
+
+    public boolean callOnDoubleTap(Animator animation, float oldZoom, float newZoom) {
+        return onDoubleTapListener != null && onDoubleTapListener.onDoubleTap(animation, oldZoom, newZoom);
+    }
+
+    public void setOnPinchZoom(OnPinchZoomListener onPinchZoomListener) {
+        this.onPinchZoomListener = onPinchZoomListener;
+    }
+
+    public boolean callOnPinchZoom(Animator animation,  float oldZoom, float newZoom) {
+        return onPinchZoomListener != null && onPinchZoomListener.onPinchZoom(animation, oldZoom, newZoom);
+    }
+
+    public void setOnScrollAnimation(OnScrollAnimation onScrollAnimation) {
+        this.onScrollAnimation = onScrollAnimation;
+    }
+
+    public boolean callOnScrollAnimation(Animator animation, int scrollMoveDirection) {
+        return onScrollAnimation != null && onScrollAnimation.onScrollAnimation(animation, scrollMoveDirection);
     }
 
     public void setOnLongPress(OnLongPressListener onLongPressListener) {
