@@ -12,8 +12,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.github.barteksc.pdfviewer.PDFView;
-import com.github.barteksc.pdfviewer.R;
 import com.github.barteksc.pdfviewer.util.Util;
+import com.github.mhiew.pdfviewer.R;
 
 public class DefaultScrollHandle extends RelativeLayout implements ScrollHandle {
 
