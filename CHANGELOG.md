@@ -1,3 +1,5 @@
+## 3.3.0-beta.2 (2023-09-04)
+* Change method enableDoubleTap private to public
 ## 3.3.0-beta.1 (2023-08-30) [fork](https://github.com/barteksc/AndroidPdfViewer)
 * pinch gesture zoom (callback onPinchZoom).
 * double tap zoom (callback onDoubleTap).
