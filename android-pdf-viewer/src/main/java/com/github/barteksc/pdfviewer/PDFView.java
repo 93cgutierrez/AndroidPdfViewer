@@ -556,11 +556,11 @@ public class PDFView extends RelativeLayout {
         }
     }
 
-    void enableDoubletap(boolean enableDoubletap) {
+    public void enableDoubleTap(boolean enableDoubletap) {
         this.doubletapEnabled = enableDoubletap;
     }
 
-    boolean isDoubletapEnabled() {
+    public boolean isDoubleTapEnabled() {
         return doubletapEnabled;
     }
 
@@ -1784,7 +1784,7 @@ public class PDFView extends RelativeLayout {
             PDFView.this.callbacks.setLinkHandler(linkHandler);
             PDFView.this.setSwipeEnabled(enableSwipe);
             PDFView.this.setNightMode(nightMode);
-            PDFView.this.enableDoubletap(enableDoubletap);
+            PDFView.this.enableDoubleTap(enableDoubletap);
             PDFView.this.setDefaultPage(defaultPage);
             PDFView.this.setSwipeVertical(!swipeHorizontal);
             PDFView.this.enableAnnotationRendering(annotationRendering);
