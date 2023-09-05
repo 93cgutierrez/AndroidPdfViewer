@@ -564,6 +564,14 @@ public class PDFView extends RelativeLayout {
         return doubletapEnabled;
     }
 
+    public void setDoubleTapPdfEnabled(boolean doubleTapEnabled) {
+        this.doubletapEnabled = doubleTapEnabled;
+    }
+
+    public boolean isDoubleTapPdfEnabled() {
+        return doubletapEnabled;
+    }
+
     void onPageError(PageRenderingException ex) {
         if (!callbacks.callOnPageError(ex.getPage(), ex.getCause())) {
             //Log.e(TAG, "Cannot open page " + ex.getPage(), ex.getCause());
@@ -1617,8 +1625,8 @@ public class PDFView extends RelativeLayout {
             return this;
         }
 
-        public Configurator enableDoubletap(boolean enableDoubletap) {
-            this.enableDoubletap = enableDoubletap;
+        public Configurator enableDoubleTap(boolean enableDoubleTap) {
+            this.enableDoubletap = enableDoubleTap;
             return this;
         }
 
@@ -1785,6 +1793,7 @@ public class PDFView extends RelativeLayout {
             PDFView.this.setSwipeEnabled(enableSwipe);
             PDFView.this.setNightMode(nightMode);
             PDFView.this.enableDoubleTap(enableDoubletap);
+            PDFView.this.setDoubleTapPdfEnabled(enableDoubletap);
             PDFView.this.setDefaultPage(defaultPage);
             PDFView.this.setSwipeVertical(!swipeHorizontal);
             PDFView.this.enableAnnotationRendering(annotationRendering);
