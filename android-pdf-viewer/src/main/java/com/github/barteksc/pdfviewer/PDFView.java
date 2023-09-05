@@ -211,7 +211,7 @@ public class PDFView extends RelativeLayout {
 
     private boolean enableSwipe = true;
 
-    private boolean doubletapEnabled = true;
+    private boolean doubleTapEnabled = true;
 
     private boolean nightMode = false;
 
@@ -556,20 +556,12 @@ public class PDFView extends RelativeLayout {
         }
     }
 
-    public void enableDoubleTap(boolean enableDoubletap) {
-        this.doubletapEnabled = enableDoubletap;
+    public void setEnableDoubleTap(boolean enableDoubleTap) {
+        this.doubleTapEnabled = enableDoubleTap;
     }
 
     public boolean isDoubleTapEnabled() {
-        return doubletapEnabled;
-    }
-
-    public void setDoubleTapPdfEnabled(boolean doubleTapEnabled) {
-        this.doubletapEnabled = doubleTapEnabled;
-    }
-
-    public boolean isDoubleTapPdfEnabled() {
-        return doubletapEnabled;
+        return doubleTapEnabled;
     }
 
     void onPageError(PageRenderingException ex) {
@@ -1555,7 +1547,7 @@ public class PDFView extends RelativeLayout {
 
         private boolean enableSwipe = true;
 
-        private boolean enableDoubletap = true;
+        private boolean enableDoubleTap = true;
 
         private OnDrawListener onDrawListener;
 
@@ -1626,7 +1618,7 @@ public class PDFView extends RelativeLayout {
         }
 
         public Configurator enableDoubleTap(boolean enableDoubleTap) {
-            this.enableDoubletap = enableDoubleTap;
+            this.enableDoubleTap = enableDoubleTap;
             return this;
         }
 
@@ -1792,8 +1784,7 @@ public class PDFView extends RelativeLayout {
             PDFView.this.callbacks.setLinkHandler(linkHandler);
             PDFView.this.setSwipeEnabled(enableSwipe);
             PDFView.this.setNightMode(nightMode);
-            PDFView.this.enableDoubleTap(enableDoubletap);
-            PDFView.this.setDoubleTapPdfEnabled(enableDoubletap);
+            PDFView.this.setEnableDoubleTap(enableDoubleTap);
             PDFView.this.setDefaultPage(defaultPage);
             PDFView.this.setSwipeVertical(!swipeHorizontal);
             PDFView.this.enableAnnotationRendering(annotationRendering);
